@@ -132,7 +132,7 @@ class PaymentRepository extends \Doctrine\ORM\EntityRepository
          * */
 
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT SUM(p.amount*r.rate) sum, DATE_FORMAT(created_at, "%d.%m.%Y") day
+        $sql = 'SELECT DATE_FORMAT(created_at, "%d.%m.%Y") day, SUM(p.amount*r.rate) sum
                   FROM payments p
                   LEFT JOIN currency_rates r 
                     ON r.currency_code = p.currency_code AND r.date = DATE_FORMAT(p.created_at, "%Y-%c-%d")
