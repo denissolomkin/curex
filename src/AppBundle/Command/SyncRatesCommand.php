@@ -5,6 +5,7 @@ namespace AppBundle\Command;
 use AppBundle\Entity\CurrencyRate;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -15,7 +16,12 @@ class SyncRatesCommand extends ContainerAwareCommand
         $this
             ->setName('app:sync-rates')
             ->setDescription('Sync rates.')
-            ->setHelp('Get rates from MasterCard and save its into database for last 10 days');
+            ->setHelp('Get rates from MasterCard and save its into database for last 10 days')
+            ->addArgument(
+                'days',
+                InputArgument::OPTIONAL,
+                'How many days need to sync?'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -24,11 +30,11 @@ class SyncRatesCommand extends ContainerAwareCommand
 
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        /* наши настройки, при желании, можно переписать на получение с командной строки */
+        /* наши настройки, при желании*/
         $currencies = array('EUR', 'USD');
         $baseCurrency = 'UAH';
-        $days = 7; /* глубина выборки дней */
-        $tries = 1; /* в случае отсутствия курса у МастерКарда для первого дня, сколько дней перебрать до него */
+        $days = $input->getArgument('days')?:7; /* глубина выборки дней */
+        $tries = 2; /* в случае отсутствия курса у МастерКарда для первого дня, сколько дней перебрать до него */
         $dateEnd = new \DateTime('now');
 
         /* фиксим параметры, переводим значения с человекопонятных в алгоротмоориентированные */
@@ -78,8 +84,8 @@ class SyncRatesCommand extends ContainerAwareCommand
 
                     $output->write($dateStart->format('Y-m-d') . ' = ');
 
-                    /* если курс еще не переобъявлен, то устанавливаем начальный день заново, мало ли сколько
-                    дней мы пролистали назад, пока МастерКард нам таки отдал курс */
+                    /* если последний курс был еще не переобъявлен, то устанавливаем начальный день заново,
+                    мало ли сколько дней мы пролистали назад, пока МастерКард нам таки отдал курс */
                     if (is_null($lastRate)) {
                         $dateStart = new \DateTime('now');
                         $dateStart->modify('-' . $days . ' day');
@@ -107,9 +113,7 @@ class SyncRatesCommand extends ContainerAwareCommand
                         $em->flush();
 
                         if (key_exists('conversionRate', $result['data'])) {
-
                             $output->writeln($lastRate);
-
                         } else {
                             $output->writeln($lastRate . '[use previous day]');
                         }
