@@ -68,7 +68,7 @@ class PaymentRepository extends \Doctrine\ORM\EntityRepository
          * */
 
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT u.id user_id, u.name user_name, p.currency_code, p.amount, p.amount*r.rate uah, p.created_at
+        $sql = 'SELECT u.id user_id, u.name user_name, p.currency_code, p.amount, ROUND(p.amount*r.rate,2) uah, p.created_at
                   FROM payments p
                   JOIN (
                        SELECT user_id, MAX(created_at) AS last
@@ -132,7 +132,7 @@ class PaymentRepository extends \Doctrine\ORM\EntityRepository
          * */
 
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT DATE_FORMAT(created_at, "%d.%m.%Y") day, SUM(p.amount*r.rate) sum
+        $sql = 'SELECT DATE_FORMAT(created_at, "%d.%m.%Y") day, ROUND(SUM(p.amount*r.rate),2) sum
                   FROM payments p
                   LEFT JOIN currency_rates r 
                     ON r.currency_code = p.currency_code AND r.date = DATE_FORMAT(p.created_at, "%Y-%c-%d")
