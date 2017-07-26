@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="wrapper">
+        <div id="container">
+            <h1>Last Unsuccessfull Euro Payments:</h1>
+            <table>
+                <tr>
+                    <th>Uid</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Currency</th>
+                    <th>Amount</th>
+                    <th>UAH</th>
+                </tr>
+                {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.user_id }}</td>
+                        <td>{{ payment.user_name }}</td>
+                        <td>{{ payment.created_at|date("d.m.Y") }}</td>
+                        <td>{{ payment.currency_code }}</td>
+                        <td>{{ payment.amount }}</td>
+                        <td>{{ payment.uah }}</td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+
+            <h1>Weekly Statistics in UAH Equivalent:</h1>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Sum</th>
+                </tr>
+                {% for stat in statistics %}
+                    <tr>
+                        <td>{{ stat.day | default('Total')  }}</td>
+                        <td>{{ stat.sum}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background: #F5F5F5;
+            font: 18px/1.5 sans-serif;
+        }
+
+        h1, h2 {
+            line-height: 1.2;
+            margin: 0 0 0.5em;
+        }
+
+        table {
+            margin: 0 0 2.5em;
+            width: 100%;
+        }
+
+        th {
+            text-align: left
+        }
+
+        h1 {
+            font-size: 36px;
+        }
+
+        h2 {
+            font-size: 21px;
+            margin-bottom: 1em;
+        }
+
+        p {
+            margin: 0 0 1em 0;
+        }
+
+        #wrapper {
+            background: #FFF;
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+        }
+
+        #container {
+            padding: 2em;
+        }
+
+        @media (min-width: 768px) {
+            #wrapper {
+                width: 80%;
+                margin: 2em auto;
+            }
+        }
+    </style>
+{% endblock %}

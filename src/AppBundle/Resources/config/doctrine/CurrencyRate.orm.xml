@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity repository-class="AppBundle\Repository\CurrencyRateRepository" name="AppBundle\Entity\CurrencyRate" table="currency_rates">
+    <unique-constraints>
+      <unique-constraint columns="currency_code,date" name="search_idx" />
+    </unique-constraints>
+    <id name="id" type="integer" column="id">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="currencyCode" type="string" column="currency_code" length="3"/>
+    <field name="date" type="date" column="date"/>
+    <field name="rate" type="decimal" column="rate" precision="10" scale="6"/>
+  </entity>
+</doctrine-mapping>
